@@ -15,8 +15,9 @@ from dotenv import load_dotenv
 import restconf_final as rest
 #######################################################################################
 # 2. Assign the Webex access token to the variable ACCESS_TOKEN using environment variables.
-
+load_dotenv()
 ACCESS_TOKEN = os.environ.get('ACCESS_TOKEN')
+
 
 #######################################################################################
 # 3. Prepare parameters get the latest message for messages API.
@@ -36,7 +37,8 @@ while True:
     getParameters = {"roomId": roomIdToGetMessages, "max": 1}
 
     # the Webex Teams HTTP header, including the Authoriztion
-    getHTTPHeader = {"Authorization": ACCESS_TOKEN}
+    getHTTPHeader = {"Authorization": f"Bearer {ACCESS_TOKEN}"}
+
 
 # 4. Provide the URL to the Webex Teams messages API, and extract location from the received message.
     
@@ -88,10 +90,10 @@ while True:
             responseMessage = rest.disable()
         elif actionn == "status":
             responseMessage = rest.status()
-        elif actionn == "gigabit_status":
-            responseMessage = rest.gigabit_status()
-        elif actionn == "showrun":
-            responseMessage = rest.showrun()
+        # elif actionn == "gigabit_status":
+        #     responseMessage = rest.gigabit_status()
+        # elif actionn == "showrun":
+        #     responseMessage = rest.showrun()
         else:
             responseMessage = "Error: No command or unknown command"
         
@@ -132,6 +134,8 @@ while True:
         #     HTTPHeaders = {"Authorization": <!!!REPLACEME!!!>, "Content-Type": <!!!REPLACEME!!!>}   
 
         # Post the call to the Webex Teams message API.
+        postHTTPHeaders = HTTPHeaders = {"Authorization": ACCESS_TOKEN, "Content-Type": 'application/json'}
+        postData = {"roomId": roomIdToGetMessages, "text": responseMessage}
         r = requests.post(
             "https://webexapis.com/v1/messages",
             data=json.dumps(postData, indent=4),
